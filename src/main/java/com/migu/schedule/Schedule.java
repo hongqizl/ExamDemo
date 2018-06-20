@@ -126,77 +126,7 @@ public class Schedule {
         this.threshold = threshold;
         boolean balanced = false;
 
-
-        List<Integer> tmpTasks = new ArrayList<Integer>();
-        for(Integer taskId:tasks){
-            tmpTasks.add(taskId);
-        }
-        for(Integer nodeId:nodes){
-            List<TaskInfo> taskInfos = new ArrayList<TaskInfo>();
-            taskStatus.put(nodeId,taskInfos);
-        }
-
-        while(!balanced || tmpTasks.size()>0){
-            for(Integer taskId:tmpTasks){
-                int nodeId = findNode();
-                List<TaskInfo> taskInfos = taskStatus.get(nodeId);
-                TaskInfo taskInfo = new TaskInfo();
-                taskInfo.setTaskId(taskId);
-                taskInfo.setNodeId(nodeId);
-                taskInfos.add(taskInfo);
-                tmpTasks.remove(new Integer(taskId));
-                insertSameTask(taskId);
-                balanced = calcBalance(nodeId);
-                break;
-            }
-            if(tmpTasks.size()==0 && !balanced)
-                return ReturnCodeKeys.E014;
-        }
-
-        for (Integer time:sameTasks.keySet()){
-            List<Integer> list = sameTasks.get(time);
-            if(list.size()>1){
-
-                List<TaskInfo> tasks = new ArrayList<TaskInfo>();
-                for(Integer nodeId:taskStatus.keySet()){
-                    List<TaskInfo> taskInfos = taskStatus.get(nodeId);
-                    for(TaskInfo ti:taskInfos){
-                        if(list.contains(ti.getTaskId())){
-                            tasks.add(ti);
-                        }
-                    }
-                }
-                Collections.sort(tasks,comparatorByNodeId);
-                Collections.sort(list);
-                for(int i=0;i<tasks.size();i++){
-                    TaskInfo ti = tasks.get(i);
-                    ti.setTaskId(list.get(i));
-                }
-            }
-        }
-
-
         return ReturnCodeKeys.E013;
-    }
-
-    public int queryTaskStatus(List<TaskInfo> tasks) {
-
-        for(Integer nodeId:taskStatus.keySet()){
-            tasks.addAll(taskStatus.get(nodeId));
-        }
-        Collections.sort(tasks,comparator);
-        System.out.println(tasks);
-        // 如果查询结果参数tasks为null，返回E016:参数列表非法
-        if(tasks==null){
-            return ReturnCodeKeys.E016;
-        }
-        //未做此题返回 E000方法未实现。
-        if(tasks.contains(tasks)){
-            return ReturnCodeKeys.E000;
-        }
-        //如果查询成功, 返回E015: 查询任务状态成功;查询结果从参数Tasks返回。
-        return ReturnCodeKeys.E015;
-
     }
 
     private int findNode() {
@@ -249,5 +179,25 @@ public class Schedule {
             }
         }
         return true;
+    }
+
+    public int queryTaskStatus(List<TaskInfo> tasks) {
+
+        for(Integer nodeId:taskStatus.keySet()){
+            tasks.addAll(taskStatus.get(nodeId));
+        }
+        Collections.sort(tasks,comparator);
+        System.out.println(tasks);
+        // 如果查询结果参数tasks为null，返回E016:参数列表非法
+        if(tasks==null){
+            return ReturnCodeKeys.E016;
+        }
+        //未做此题返回 E000方法未实现。
+        if(tasks.contains(tasks)){
+            return ReturnCodeKeys.E000;
+        }
+        //如果查询成功, 返回E015: 查询任务状态成功;查询结果从参数Tasks返回。
+        return ReturnCodeKeys.E015;
+
     }
 }
