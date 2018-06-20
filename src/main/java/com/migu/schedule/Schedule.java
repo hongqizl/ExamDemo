@@ -117,18 +117,12 @@ public class Schedule {
         if(tasks.isEmpty()) {
             return ReturnCodeKeys.E014;
         }
-        this.threshold = threshold;
-        boolean balanced = false;
-
-        return ReturnCodeKeys.E013;
-    }
-
-    private int countTasks(List<TaskInfo> taskInfos){
-        int result = 0;
-        for(TaskInfo taskInfo:taskInfos){
-            result+=taskMap.get(taskInfo.getTaskId());
+        //如果获得最佳迁移方案, 进行了任务的迁移,返回E013: 任务调度成功;
+        if (sameTasksMap.containsKey(threshold)){
+            return ReturnCodeKeys.E013;
         }
-        return result;
+        this.threshold = threshold;
+        return ReturnCodeKeys.E002;
     }
 
     public int queryTaskStatus(List<TaskInfo> tasks) {
