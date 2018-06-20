@@ -27,15 +27,9 @@ public class Schedule {
 
     private int threshold = 0;
 
-    private Map<Integer,List<TaskInfo>> taskStatus = new HashMap<Integer, List<TaskInfo>>();
+    private Map<Integer,List<TaskInfo>> taskStatusMap = new HashMap<Integer, List<TaskInfo>>();
 
-    Comparator<TaskInfo> comparatorByNodeId = new Comparator<TaskInfo>(){
-        public int compare(TaskInfo o1, TaskInfo o2) {
-            return (o1.getNodeId()-o2.getNodeId());
-        }
-    };
-
-    private Map<Integer,List<Integer>> sameTasks = new HashMap<Integer, List<Integer>>();
+    private Map<Integer,List<Integer>> sameTasksMap = new HashMap<Integer, List<Integer>>();
 
     Comparator<TaskInfo> comparator = new Comparator<TaskInfo>(){
         public int compare(TaskInfo o1, TaskInfo o2) {
@@ -129,24 +123,6 @@ public class Schedule {
         return ReturnCodeKeys.E013;
     }
 
-    private int findNode() {
-        int tmpId = -1;
-        int min = Integer.MAX_VALUE;
-        for(Integer nodeId:nodes){
-            List<TaskInfo> taskInfos = taskStatus.get(nodeId);
-            if(taskInfos==null){
-                return nodeId;
-            }else{
-                int w = countTasks(taskInfos);
-                if(w<min){
-                    min = w;
-                    tmpId = nodeId;
-                }
-            }
-        }
-        return tmpId;
-    }
-
     private int countTasks(List<TaskInfo> taskInfos){
         int result = 0;
         for(TaskInfo taskInfo:taskInfos){
@@ -155,36 +131,10 @@ public class Schedule {
         return result;
     }
 
-        private void insertSameTask(int taskId){
-            int time = taskMap.get(taskId);
-            List<Integer> list = sameTasks.get(time);
-            if(list==null){
-                list = new ArrayList<Integer>();
-                sameTasks.put(time,list);
-            }
-            list.add(taskId);
-        }
-    private boolean calcBalance(int nodeId){
-        int source = countTasks(taskStatus.get(nodeId));
-        for(Integer id:nodes){
-            if(!id.equals(nodeId)){
-                int t = 0;
-                if(taskStatus.get(id)==null){
-                    t=0;
-                }else{
-                    t = countTasks(taskStatus.get(id));
-                }
-
-                if(Math.abs(t-source)>this.threshold) return false;
-            }
-        }
-        return true;
-    }
-
     public int queryTaskStatus(List<TaskInfo> tasks) {
 
-        for(Integer nodeId:taskStatus.keySet()){
-            tasks.addAll(taskStatus.get(nodeId));
+        for(Integer nodeId:taskStatusMap.keySet()){
+            tasks.addAll(taskStatusMap.get(nodeId));
         }
         Collections.sort(tasks,comparator);
         System.out.println(tasks);
